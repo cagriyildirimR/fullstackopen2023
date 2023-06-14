@@ -6,12 +6,14 @@ const Part = (props) => {
     )
 }
 
-export const Content = (props) => {
-    console.log("Values passed into Content are", props)
+export const Content = ({parts} ) => {
+    console.log("Values passed into Content are", parts);
 
     return (
-        props.parts.map((part, index) => (
-            <Part part={part} exercise={props.exercises[index]} />
-        ))
-    )
-}
+        <div>
+            {parts.map((part, index) => (
+                <Part key={index} part={part.name} exercise={part.exercises} />
+            ))}
+        </div>
+    );
+};
