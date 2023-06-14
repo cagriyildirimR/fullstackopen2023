@@ -6,9 +6,9 @@ const Part = (props) => {
     )
 }
 
-export const Content = ({parts} ) => {
-    console.log("Values passed into Content are", parts);
-
+export const Content = ({course} ) => {
+    console.log("Values passed into Content are", course);
+    let parts = course.parts
     return (
         <div>
             {parts.map((part, index) => (

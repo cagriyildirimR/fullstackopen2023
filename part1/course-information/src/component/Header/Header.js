@@ -1,7 +1,7 @@
-const Header = (props)=>{
-    console.log("Values passed into Header are", props)
+const Header = ({course})=>{
+    console.log("Values passed into Header are", course)
     return (
-        <h1>{props.course}</h1>
+        <h1>{course.name}</h1>
     )
 }
 
