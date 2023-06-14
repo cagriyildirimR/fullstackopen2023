@@ -3,7 +3,7 @@
 
 This repository contains my solutions for the exercises in the Full Stack Open 2023 course. The course covers a wide range of topics related to full stack web development, including frontend development with React, backend development with Node.js and Express, and using databases.
 
-The solutions are organized into folders named after each part of the course. Each folder contains the exercise files for that part. For example, the `part0` folder contains the solution for exercise 1, the `part1` folder contains the solutions for exercises in part 1, and so on.
+The solutions are organized into folders named after each part of the course. Each folder contains the exercise files for that part. For example, the `part0` folder contains the solution projects for part 0, the `part1` folder contains the solutions for exercises in part 1, and so on.
 
 ## Course Structure
 
