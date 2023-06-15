@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import {FeedbackButton} from "./components/FeedbackButton/FeedbackButton";
-import {Statistic} from "./components/Statistic/Statistic";
+import {StatisticLine} from "./components/Statistic/StatisticLine";
 
 const App = () => {
   // save clicks of each button to its own state
@@ -18,14 +18,16 @@ const App = () => {
           <FeedbackButton text={"bad"} handleClick={handleClick(bad, setBad)} />
           <h1>Statistics</h1>
           {good || neutral || bad ? (
-              <>
-                  <Statistic value={good} text={"Good"} />
-                  <Statistic value={neutral} text={"Neutral"} />
-                  <Statistic value={bad} text={"Bad"} />
-                  <Statistic value={good + neutral + bad} text={"All"} />
-                  <Statistic value={(good - bad) / (good + neutral + bad)} text={"Average"} />
-                  <Statistic value={(100 * good) / (good + neutral + bad)} text={"Positive"} />
-              </>
+              <table>
+                  <tbody>
+                      <StatisticLine value={good} text={"Good"} />
+                      <StatisticLine value={neutral} text={"Neutral"} />
+                      <StatisticLine value={bad} text={"Bad"} />
+                      <StatisticLine value={good + neutral + bad} text={"All"} />
+                      <StatisticLine value={(good - bad) / (good + neutral + bad)} text={"Average"} />
+                      <StatisticLine value={(100 * good) / (good + neutral + bad)} text={"Positive"} />
+                  </tbody>
+              </table>
           ) : (
               <p>No feedback given</p>
           )}
