@@ -1,9 +1,15 @@
-export const Total = ({course}) => {
-    console.log("Values passed into Total are", course)
-    let parts = course.parts
-    let total = 0
-    parts.forEach( v => total += v.exercises)
+export const Total = ({ course }) => {
+    console.log("Values passed into Total are", course);
+    const parts = course.parts;
+    const total = parts.reduce((s, p) => {
+        console.log('s object is', s);
+        console.log('p object is', p);
+
+        console.log('what is happening', s, p.exercises);
+
+        return s + p.exercises;
+    }, 0);
     return (
-        <p> Number of exercises {total} </p>
-    )
-}
+        <p>Number of exercises {total}</p>
+    );
+};
