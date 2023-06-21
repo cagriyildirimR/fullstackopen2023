@@ -1,62 +1,90 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {Filter} from "./components/Filter/Filter";
 import {List} from "./components/Person/List";
 import {PhonebookForm} from "./components/PhonebookForm/PhonebookForm";
+import {addContact, deleteContact, fetch, updateContact} from "./service/api";
 
 const App = () => {
-    const [people, setPeople] = useState([
-        { name: 'Arto Hellas', number: '040-123456', id: 1 },
-        { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
-        { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
-        { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
-    ])
-    const [newName, setNewName] = useState('');
-    const [number, setNumber] = useState('')
-    const [filter, setFilter] = useState('')
+    const [contacts, setContacts] = useState([]);
+    const [contactName, setContactName] = useState('');
+    const [contactNumber, setContactNumber] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
 
-    const handleFilter = (e) => {
-        setFilter(e.target.value)
+    const handleSearchQueryChange = (e) => {
+        setSearchQuery(e.target.value)
     }
 
-    const handleNewName = (e) => {
+    const fetchContacts = () => {
+        fetch().then(data => {
+            console.log(`data we received from server ${data}`)
+            setContacts(data)
+        })
+    }
+    useEffect(fetchContacts, [])
+
+    const handleContactNameChange = (e) => {
         console.log('New name is', e.target.value);
-        setNewName(e.target.value);
+        setContactName(e.target.value);
     };
 
-    const handleNumber = (e) => {
+    const handleContactNumberChange = (e) => {
         console.log('Number is', e.target.value);
-        setNumber(e.target.value)
+        setContactNumber(e.target.value)
     }
 
-    const handleSubmit = (e) => {
+    const handleAddContact = (e) => {
         e.preventDefault(); // Prevent form submission and page reload
 
-        if (newName.length <= 4) {
+        if (contactName.length <= 4) {
             alert('Name must have at least 5 characters');
-        } else if (number.length !== 11){
-            alert('Number must have 11 digits')
+            return
         }
-        else if (people.map(person => person.name).some(name => name === newName )) {
-            alert(`${newName} is already added to phonebook`)
-        } else{
-            setPeople(people.concat(
-                {
-                    name: newName,
-                    number: number,
-                    id: people.length + 1
-                }));
-            setNewName('');
+        if (contactNumber.length < 7) {
+            alert('Number must have at least 7 digits');
+            return
         }
+        if (contacts.map(person => person.name).some(name => name === contactName)) {
+            const up = {
+                name: contactName,
+                number: contactNumber,
+                id: contacts.find(c => c.name === contactName).id
+            }
+            updateContact(up)
+            console.log(`${contactName} is already added to phonebook. updating the number`)
+            setContacts(contacts.map(c => (c.name === up.name) ? up : c))
+            return
+        }
+
+        const newContact = {
+            name: contactName,
+            number: contactNumber,
+        }
+        const response = addContact(newContact)
+        response.then(returnedPerson => {
+            setContacts(contacts.concat(returnedPerson))
+            setContactName('')
+        })
     };
+
+    const handleDelete = (id) => {
+        if (window.confirm("Are you sure?")) {
+            deleteContact(id)
+            setContacts(contacts.filter(contact => contact.id !== id))
+        }
+    }
 
     return (
         <div>
             <h1>Phonebook</h1>
-            <Filter handler={handleFilter} text={filter}/>
+            <Filter handler={handleSearchQueryChange} text={searchQuery}/>
             <h2>add a new</h2>
-            <PhonebookForm handleSubmit={handleSubmit} handleNewName={handleNewName} handleNumber={handleNumber} newName={newName} number={number}/>
+            <PhonebookForm handleAddContact={handleAddContact}
+                           handleContactNameChange={handleContactNameChange}
+                           handleContactNumberChange={handleContactNumberChange}
+                           contactName={contactName}
+                           contactNumber={contactNumber}/>
             <h2>Numbers</h2>
-            <List filter={filter} people={people}/>
+            <List filter={searchQuery} people={contacts} handleDelete={handleDelete}/>
         </div>
     );
 };

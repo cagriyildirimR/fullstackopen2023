@@ -1,15 +1,9 @@
-export const PhonebookForm = ({ newName, handleNewName, number, handleNumber, handleSubmit }) => {
+export const PhonebookForm = ({ contactName, handleContactNameChange, contactNumber, handleContactNumberChange, handleAddContact }) => {
     return (
-        <form onSubmit={handleSubmit}>
-            <div>
-                name: <input value={newName} onChange={handleNewName} />
-            </div>
-            <div>
-                number: <input value={number} onChange={handleNumber} />
-            </div>
-            <div>
-                <button type="submit">Add</button>
-            </div>
+        <form onSubmit={handleAddContact}>
+            name: <input value={contactName} onChange={handleContactNameChange} />
+            number: <input value={contactNumber} onChange={handleContactNumberChange} />
+            <button type="submit">Add</button>
         </form>
     );
 };
