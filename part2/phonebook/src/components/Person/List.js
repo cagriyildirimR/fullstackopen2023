@@ -1,5 +1,5 @@
-import {Person} from "./Person";
 import React from "react";
+import Person from "./Person";
 
 export const List = ({people, filter, handleDelete}) => {
     return (

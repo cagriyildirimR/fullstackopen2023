@@ -1,14 +1,18 @@
 import React, {useEffect, useState} from 'react';
-import {Filter} from "./components/Filter/Filter";
 import {List} from "./components/Person/List";
-import {PhonebookForm} from "./components/PhonebookForm/PhonebookForm";
 import {addContact, deleteContact, fetch, updateContact} from "./service/api";
+import PhonebookForm from "./components/PhonebookForm/PhonebookForm";
+import Filter from "./components/Filter/Filter";
+import {SuccessNotification} from "./components/Notification/Success";
+import {ErrorNotification} from "./components/Notification/Error";
 
 const App = () => {
     const [contacts, setContacts] = useState([]);
     const [contactName, setContactName] = useState('');
     const [contactNumber, setContactNumber] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
+    const [notificationMessage, setNotificationMessage] = useState('')
+    const [errorMessage, setErrorMessage] = useState('')
 
     const handleSearchQueryChange = (e) => {
         setSearchQuery(e.target.value)
@@ -36,7 +40,7 @@ const App = () => {
         e.preventDefault(); // Prevent form submission and page reload
 
         if (contactName.length <= 4) {
-            alert('Name must have at least 5 characters');
+            setErrorMessage('Name must have at least 5 characters');
             return
         }
         if (contactNumber.length < 7) {
@@ -63,6 +67,7 @@ const App = () => {
         response.then(returnedPerson => {
             setContacts(contacts.concat(returnedPerson))
             setContactName('')
+            setNotificationMessage(`${returnedPerson.name} is added to the Phonebook`)
         })
     };
 
@@ -73,18 +78,37 @@ const App = () => {
         }
     }
 
+    const appStyle = {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        maxWidth: '800px',
+        margin: '0 auto',
+    };
+
+    const titleStyle = {
+        textAlign: 'center',
+        fontSize: '3rem',
+        margin: '20px 0',
+    };
+
     return (
-        <div>
-            <h1>Phonebook</h1>
-            <Filter handler={handleSearchQueryChange} text={searchQuery}/>
-            <h2>add a new</h2>
+        <div style={appStyle}>
+            <SuccessNotification message={notificationMessage}/>
+            <ErrorNotification message={errorMessage}/>
+            <h1 style={titleStyle}>Phonebook</h1>
+            <Filter handler={handleSearchQueryChange}
+                    text={searchQuery}/>
+            <h2>Add a New Contact</h2>
             <PhonebookForm handleAddContact={handleAddContact}
                            handleContactNameChange={handleContactNameChange}
                            handleContactNumberChange={handleContactNumberChange}
                            contactName={contactName}
                            contactNumber={contactNumber}/>
             <h2>Numbers</h2>
-            <List filter={searchQuery} people={contacts} handleDelete={handleDelete}/>
+            <List filter={searchQuery}
+                  people={contacts}
+                  handleDelete={handleDelete}/>
         </div>
     );
 };
