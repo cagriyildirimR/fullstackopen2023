@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-export const Notification = ({ message }) => {
+export const Notification = ({ message, color }) => {
     console.log(`Notification message is ${message}`)
     const [showNotification, setShowNotification] = useState(false);
 
@@ -15,8 +15,9 @@ export const Notification = ({ message }) => {
     }, [message]);
     const notificationStyle = {
         position: 'fixed',
+        top:'10%',
         left: '50%',
-        background:"#418812",
+        background:color,
         transform: 'translate(-50%, -50%)',
         color: 'white',
         padding: '15px',

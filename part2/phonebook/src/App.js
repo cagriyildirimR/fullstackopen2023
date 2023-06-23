@@ -13,71 +13,84 @@ const App = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [notificationMessage, setNotificationMessage] = useState('')
     const [errorMessage, setErrorMessage] = useState('')
+    const [refresh, setRefresh] = useState(false)
 
     const handleSearchQueryChange = (e) => {
-        setSearchQuery(e.target.value)
-    }
+        setSearchQuery(e.target.value);
+    };
 
     const fetchContacts = () => {
         fetch().then(data => {
-            console.log(`data we received from server ${data}`)
-            setContacts(data)
-        })
-    }
-    useEffect(fetchContacts, [])
+            console.log(`Received data from the server: ${data}`);
+            setContacts(data);
+        });
+    };
+    useEffect(fetchContacts, [refresh]);
 
     const handleContactNameChange = (e) => {
-        console.log('New name is', e.target.value);
-        setContactName(e.target.value);
+        const newName = e.target.value;
+        console.log('New name:', newName);
+        setContactName(newName);
     };
 
     const handleContactNumberChange = (e) => {
-        console.log('Number is', e.target.value);
-        setContactNumber(e.target.value)
-    }
+        const newNumber = e.target.value;
+        console.log('Number:', newNumber);
+        setContactNumber(newNumber);
+    };
 
     const handleAddContact = (e) => {
         e.preventDefault(); // Prevent form submission and page reload
+        console.log('handleAddContact is activated.');
 
         if (contactName.length <= 4) {
-            setErrorMessage('Name must have at least 5 characters');
-            return
+            const nameErrorMessage = `The name '${contactName}' must be at least 5 characters long.`;
+            console.log('Error:', nameErrorMessage);
+            setErrorMessage(nameErrorMessage);
+            return;
         }
         if (contactNumber.length < 7) {
-            alert('Number must have at least 7 digits');
-            return
+            const numberErrorMessage = `Number '${contactNumber}' must have at least 7 digits.`;
+            console.log('Error:', numberErrorMessage);
+            setErrorMessage(numberErrorMessage);
+            return;
         }
-        if (contacts.map(person => person.name).some(name => name === contactName)) {
-            const up = {
+        if (contacts.some(person => person.name === contactName)) {
+            const existingContact = contacts.find(c => c.name === contactName);
+            const updatedContact = {
                 name: contactName,
                 number: contactNumber,
-                id: contacts.find(c => c.name === contactName).id
-            }
-            updateContact(up)
-            console.log(`${contactName} is already added to phonebook. updating the number`)
-            setContacts(contacts.map(c => (c.name === up.name) ? up : c))
-            return
+                id: existingContact.id
+            };
+            updateContact(updatedContact).catch(error => {
+                const updateErrorMessage = `Error: ${error}. The contact does not exist in the phonebook.`;
+                setErrorMessage(updateErrorMessage);
+                setRefresh(!refresh);
+            });
+            console.log(`${contactName} is already in the phonebook. Updating the number: ${contactNumber}`);
+            setContacts(contacts.map(c => (c.name === updatedContact.name) ? updatedContact : c));
+            setNotificationMessage(`${contactName} is already added to the phonebook. Updating the number.`);
+            return;
         }
 
         const newContact = {
             name: contactName,
             number: contactNumber,
-        }
-        const response = addContact(newContact)
+        };
+        const response = addContact(newContact);
         response.then(returnedPerson => {
-            setContacts(contacts.concat(returnedPerson))
-            setContactName('')
-            setNotificationMessage(`${returnedPerson.name} is added to the Phonebook`)
-        })
+            setContacts(contacts.concat(returnedPerson));
+            setContactName('');
+            setNotificationMessage(`${returnedPerson.name} is added to the phonebook.`);
+        });
     };
 
     const handleDelete = (id) => {
         if (window.confirm("Are you sure?")) {
-            deleteContact(id)
-            setContacts(contacts.filter(contact => contact.id !== id))
+            deleteContact(id);
+            setContacts(contacts.filter(contact => contact.id !== id));
         }
-    }
-
+    };
     const appStyle = {
         display: 'flex',
         flexDirection: 'column',
