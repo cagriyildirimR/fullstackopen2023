@@ -15,5 +15,5 @@ export const fetchAll = () => {
 // }
 
 export const weather = (country) => {
-    return axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${country}&appid=${process.env.REACT_APP_TEST_OPEN_WEATHER_API}&units=metric`)
+    return axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${country}&appid=${process.env.REACT_APP_OPEN_WEATHER_API}&units=metric`)
 }
