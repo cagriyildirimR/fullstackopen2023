@@ -1,0 +1,82 @@
+GET localhost:3001/persons
+
+###
+GET localhost:3001/persons/2
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+
+    client.test("Check name field value", function() {
+        client.assert(response.body.name === "Ada Lovelace", "Name field value is incorrect");
+    });
+%}
+
+###
+PUT localhost:3001/persons/2
+Content-Type: application/json
+
+{
+  "name": "New Name",
+  "number": "39-44-5323523",
+  "id": 2
+}
+
+> {%
+    client.test("Check name field value", function() {
+        client.assert(response.body.name === "New Name", "Name field value is incorrect");
+    });
+%}
+
+###
+PATCH localhost:3001/persons/2
+Content-Type: application/json
+
+{
+  "name": "Ada Lovelace"
+}
+
+> {%
+    client.test("Check name field value", function() {
+        client.assert(response.body.name === "Ada Lovelace", "Name field value is incorrect");
+    });
+%}
+
+###
+POST localhost:3001/persons
+Content-Type: application/json
+
+{
+  "name": "New Name",
+  "number": "39-44-5323523",
+  "id": 1
+}
+
+> {%
+    client.test("Check name field value", function() {
+        client.assert(response.body.name === "New Name", "Name field value is incorrect");
+    });
+%}
+
+###
+GET localhost:3001/persons/1
+
+> {%
+    client.test("Check name field value", function() {
+        client.assert(response.body.name === "New Name", "Name field value is incorrect");
+    });
+%}
+
+###
+DELETE localhost:3001/persons/1
+
+###
+GET localhost:3001/persons/1
+
+
+> {%
+    client.test("Check name field value", function() {
+        client.assert(response.status === 404, "Endpoint should not exist");
+    });
+%}
