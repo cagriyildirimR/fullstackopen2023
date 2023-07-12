@@ -1,6 +1,12 @@
-const {HttpStatusCode} = require("axios");
 const express = require("express");
 const app = express()
+const bodyParser = require('body-parser');
+
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
+app.use(bodyParser.json());
+
 
 app.get('/info', (request, response) => {
   const currentTime = new Date().toString();
@@ -9,12 +15,12 @@ app.get('/info', (request, response) => {
   const r = size > 0 ? `<p>Phonebook has info for ${size} people</p>` : '</p>Phonebook is empty</p>';
   const responseString = `<br>${r}\n\nCurrent time: ${currentTime}</br>`;
 
-  response.status(HttpStatusCode.Ok).send(responseString);
+  response.status(200).send(responseString);
 });
 
 app.get('/api/persons/', (request, response) => {
   response.contentType("application/json")
-  response.send(db)
+  response.send(db.persons)
   response.status(200)
 })
 
@@ -35,9 +41,9 @@ app.delete('/api/persons/:id', (request, response) => {
   const idx = db.persons.findIndex(person => person.id === id);
   if (idx !== -1) {
     db.persons.splice(idx, 1)
-    response.status(HttpStatusCode.NoContent).end()
+    response.status(204).end()
   } else {
-    response.status(HttpStatusCode.NotFound).json({error: 'Person not found'})
+    response.status(404).json({error: 'Person not found'})
   }
 })
 
@@ -62,21 +68,30 @@ app.patch('/api/persons/:id', (request, response) => {
 
 app.post('/api/persons', (request, response) => {
   const body = request.body;
+  console.log(body);
 
   if (!body.name || !body.number) {
     return response.status(400).json({ error: 'Name or number is missing' });
   }
 
+  const existingPerson = db.persons.find((person) => person.name === body.name);
+
+  if (existingPerson) {
+    return response.status(409).json({ error: 'Name already exists in the database' });
+  }
+
   const newPerson = {
-    "name": body.name,
-    "number": body.number,
-    "id": db.persons.length + 1
+    name: body.name,
+    number: body.number,
+    id: db.persons.length + 1,
   };
 
-  db.persons.concat(newPerson)
-  response.contentType('application/json')
+  db.persons.push(newPerson);
+
+  response.contentType('application/json');
   response.status(201).json(newPerson);
 });
+
 
 
 const PORT = 3001
